@@ -42,7 +42,7 @@ This example uses three stores ("userStore", "rootStore", "ttpStore").
      Or, if you prefer, you can start each store individually in your
      favourite terminal emulator:
 
-        $ bin/start-store userStore
+        $ bin/start-store ttpStore
         $ bin/start-store rootStore
         $ bin/start-store userStore
 
