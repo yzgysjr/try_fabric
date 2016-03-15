@@ -1,0 +1,11 @@
+#!/bin/bash
+
+BIN_DIR="$(dirname $0)"
+CB_DIR="${BIN_DIR}/../var/codebases"
+
+# Figure out codebase OID.
+TTP_CB="$(cat "${CB_DIR}/ttpStore.codebase" | sed 's/[<>]//g')"
+
+# Run the program.
+"${BIN_DIR}/start-worker" ttpStore "${TTP_CB}"login.Main
+

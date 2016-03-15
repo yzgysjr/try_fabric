@@ -1,0 +1,34 @@
+
+package login;
+
+import fabric.util.Map;
+import fabric.runtime.Runtime;
+
+public class InitUser {
+	public static final void main{* <- }  (principal{*provider} p, String[] args):{p<-;p->}
+		throws SecurityException, IllegalArgumentException
+	where caller(p), provider actsfor p, {*provider} <= {p <- } 
+	{
+		final Store store = worker$.getStore(Config.userStoreName);
+		final principal w = worker$.getPrincipal();
+
+		if (store actsfor p) {
+			if (store actsfor w) {
+				if (user.User.provider <= new label {store <- }) {
+					Map root = store.getRoot();
+					root.put(Config.userServerName, new user.User[w]@store());
+				}
+				else {
+					throw new Error("provider label !<= {store<-}");
+				}
+			}
+			else {
+				throw new Error(store.name() + " doesn't act for " + worker$.getName());
+			}
+		}
+		else {
+			throw new Error(store.name() + " does not act for caller");
+		}
+	}
+}
+

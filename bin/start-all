@@ -1,0 +1,13 @@
+#!/bin/bash
+
+BIN_DIR="$(dirname $0)"
+
+"${BIN_DIR}/run-in-xterm" "Trusted third party store" \
+  "${BIN_DIR}/start-store ttpStore $@" &
+
+"${BIN_DIR}/run-in-xterm" "Root store" \
+  "${BIN_DIR}/start-store rootStore $@" &
+
+"${BIN_DIR}/run-in-xterm" "User store" \
+  "${BIN_DIR}/start-store userStore $@" &
+

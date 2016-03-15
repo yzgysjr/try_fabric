@@ -1,0 +1,15 @@
+package login;
+
+public final class Config {
+	public static final String{* <- } ttpStoreName = "ttpStore";
+	public static final String{* <- } rootStoreName = "rootStore";
+	public static final String{* <- } userStoreName = "userStore";
+
+	public static final String{* <- } ttpWorkerName = "ttpStore";
+	public static final String{* <- } rootWorkerName = "rootStore";
+	public static final String{* <- } userWorkerName = "userStore";
+
+	public static final String{* <- } userServerName = "userServer";
+	public static final String{* <- } rootServerName = "rootServer";
+}
+

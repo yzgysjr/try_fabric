@@ -1,0 +1,27 @@
+
+package login;
+import fabric.util.Map;
+
+public class InitRootStore {
+	public static void main(String[] args) {
+		atomic {
+			DelegatingPrincipal storeWorker = (DelegatingPrincipal) 
+				Worker.getWorker().getPrincipal();
+
+			DelegatingPrincipal rootWorker = (DelegatingPrincipal) 
+				Worker.getWorker().getWorker(Config.rootWorkerName).getPrincipal();
+
+			System.out.println("Delegating to " + Config.rootWorkerName);
+			storeWorker.addDelegatesTo(rootWorker);
+
+			DelegatingPrincipal ttpWorker = (DelegatingPrincipal) 
+				Worker.getWorker().getWorker(Config.ttpWorkerName).getPrincipal();
+			System.out.println("Delegating to " + Config.ttpWorkerName);
+			rootWorker.addDelegatesTo(ttpWorker);
+		}
+	}
+}
+
+/*
+ * vim: ts=4 sw=4 syntax=java
+ */

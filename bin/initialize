@@ -1,0 +1,28 @@
+#!/bin/bash
+
+BIN_DIR="$(dirname $0)"
+CB_DIR="${BIN_DIR}/../var/codebases"
+
+# Set up the principal hierarchy.
+echo "Initializing the principal hierarchy..."
+"${BIN_DIR}/start-worker" ttpStore login.InitTtpStore
+"${BIN_DIR}/start-worker" userStore login.InitUserStore
+"${BIN_DIR}/start-worker" rootStore login.InitRootStore
+
+# Publish the application code to the stores.
+echo -e "\nPublishing application code..."
+cd "${BIN_DIR}/.."
+ant publish-all
+cd - &>/dev/null
+
+# Figure out codebase OIDs.
+TTP_CB="$(cat "${CB_DIR}/ttpStore.codebase" | sed 's/[<>]//g')"
+USER_CB="$(cat "${CB_DIR}/userStore.codebase" | sed 's/[<>]//g')"
+ROOT_CB="$(cat "${CB_DIR}/rootStore.codebase" | sed 's/[<>]//g')"
+
+# Initialize application state.
+echo -e "\nInitializing application state..."
+"${BIN_DIR}/start-worker" userStore "${USER_CB}"login.InitUser
+"${BIN_DIR}/start-worker" rootStore "${ROOT_CB}"login.InitRoot
+
+echo -e "\nInitialization complete."

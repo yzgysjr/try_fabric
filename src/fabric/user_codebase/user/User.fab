@@ -1,0 +1,11 @@
+
+package user;
+
+public class User[principal UserPrincipal] implements ttp.User[UserPrincipal] 
+	where {*provider; * <- } <= {UserPrincipal <- ; * <- }
+{
+	public String{UserPrincipal -> ; UserPrincipal <- } getUsername {UserPrincipal -> ; UserPrincipal <- } () {
+		return "junru shao";
+	}
+}
+

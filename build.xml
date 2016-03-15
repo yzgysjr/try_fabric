@@ -1,0 +1,218 @@
+<!--
+  This is the Apache Ant build file for the Login example
+-->
+
+<project name="login" default="all" basedir=".">
+  <description>
+    Build login example
+  </description>
+
+  <!--
+  ****************************************************************************
+    Global properties for this build.
+  ****************************************************************************
+  -->
+
+  <import file="../../common.xml" />
+
+  <dirname property="home" file="${ant.file}"/>
+  <property name="home.codebases" value="${home}/var/codebases"/>
+
+  <!-- Fabric source directories -->
+  <property name="ttp.fab.src"
+      value="${home}/src/fabric/ttp_codebase/"/>
+  <property name="root.fab.src"
+      value="${home}/src/fabric/root_codebase/"/>
+  <property name="user.fab.src"
+      value="${home}/src/fabric/user_codebase/"/>
+
+  <!-- FabIL source directories -->
+  <property name="ttp.fil.src"
+      value="${home}/src/fabil/ttp_codebase/"/>
+  <property name="root.fil.src"
+      value="${home}/src/fabil/root_codebase/"/>
+  <property name="user.fil.src"
+      value="${home}/src/fabil/user_codebase/"/>
+
+  <!-- Node names -->
+  <property name="ttp" value="ttpStore"/>
+  <property name="root" value="rootStore"/>
+  <property name="user" value="userStore"/>
+
+  <!-- Codebase files -->
+  <property name="ttp.codebase.file"
+      value="${home.codebases}/${ttp}.codebase"/>
+  <property name="root.codebase.file"
+      value="${home.codebases}/${root}.codebase"/>
+  <property name="user.codebase.file"
+      value="${home.codebases}/${user}.codebase"/>
+
+  <!--
+  ****************************************************************************
+    Targets for cleaning up the directory tree.
+  ****************************************************************************
+  -->
+
+  <target name="clean" description="Removes generated files">
+    <delete dir="${home}/classes"/>
+  </target>
+
+  <target name="clobber" depends="clean"
+          description="Removes generated files and state of stores">
+    <delete dir="${home}/var"/>
+  </target>
+
+  <!--
+  ****************************************************************************
+    Compilation targets.
+  ****************************************************************************
+  -->
+
+  <target name="build-init" description="Build init classes">
+    <fabc dest="${home}/classes">
+      <fileset dir="${ttp.fab.src}" includes="**/*.fab"/>
+    </fabc>
+
+    <filc dest="${home}/classes">
+      <arg value="-classpath" /> <arg value="${home}/classes"/>
+      <fileset dir="${ttp.fil.src}" includes="**/*.fil" />
+      <fileset dir="${root.fil.src}" includes="**/*.fil" />
+      <fileset dir="${user.fil.src}" includes="**/*.fil" />
+    </filc>
+  </target>
+
+  <target name="build-local"
+      description="Builds the example locally, without publishing to Fabric">
+    <fabc dest="${home}/classes">
+      <arg value="-report" /> <arg value="profile=1" />
+      <arg value="-classpath"/> <arg value="${home}/classes" />
+      <fileset dir="${ttp.fab.src}" includes="**/*.fab" />
+      <fileset dir="${root.fab.src}" includes="**/*.fab" />
+      <fileset dir="${user.fab.src}" includes="**/*.fab" />
+    </fabc>
+  </target>
+
+  <!--
+  ****************************************************************************
+    Deployment targets.
+  ****************************************************************************
+  -->
+
+  <target name="publish-all"
+      depends="publish-ttp,publish-root,publish-user"
+      description="Publish all sources to Fabric">
+  </target>
+
+  <target name="publish-ttp" description="Publish ttp source"
+      depends="check-ttp" unless="ttp.up-to-date">
+    <antcall target="publish">
+      <param name="provider" value="${ttp}"/>
+      <param name="dest" value="${ttp}"/>
+      <param name="codebase.dir" value="${ttp.fab.src}"/>
+      <param name="target.codebasefile" value="${ttp.codebase.file}"/>
+      <param name="publish.args" value=""/>
+    </antcall>
+    <uptodate property="ttp.up-to-date" targetfile="${ttp.codebase.file}">
+      <srcfiles dir="${ttp.fab.src}" includes="**/*.fab" />
+    </uptodate>
+  </target>
+
+  <target name="publish-root" description="Publish root source"
+      depends="check-root" unless="root.up-to-date">
+    <antcall target="publish">
+      <param name="provider" value="${root}"/>
+      <param name="dest" value="${root}"/>
+      <param name="codebase.dir" value="${root.fab.src}"/>
+      <param name="target.codebasefile" value="${root.codebase.file}"/>
+      <param name="publish.args" value="-classpath @${ttp.codebase.file}"/>
+    </antcall>
+    <uptodate property="root.up-to-date"
+        targetfile="${root.codebase.file}">
+      <srcfiles dir="${root.fab.src}" includes="**/*.fab" />
+      <srcfiles file="${ttp.codebase.file}"/>
+    </uptodate>
+  </target>
+
+  <target name="publish-user" description="Publish user source"
+      depends="check-user" unless="user.up-to-date">
+    <antcall target="publish">
+      <param name="provider" value="${user}"/>
+      <param name="dest" value="${user}"/>
+      <param name="codebase.dir" value="${user.fab.src}"/>
+      <param name="target.codebasefile" value="${user.codebase.file}"/>
+      <param name="publish.args" value="-classpath @${ttp.codebase.file}"/>
+    </antcall>
+    <uptodate property="user.up-to-date" targetfile="${user.codebase.file}">
+      <srcfiles dir="${user.fab.src}" includes="**/*.fab" />
+      <srcfiles file="${ttp.codebase.file}"/>
+    </uptodate>
+  </target>
+
+  <!--
+  ____________________________________________________________________________
+    Deployment helper targets.
+  -->
+
+  <target name="check-ttp">
+    <uptodate property="ttp.up-to-date"
+        targetfile="${ttp.codebase.file}">
+      <srcfiles dir="${ttp.fab.src}" includes="**/*.fab" />
+    </uptodate>
+  </target>
+
+  <target name="check-root">
+    <uptodate property="root.up-to-date"
+        targetfile="${root.codebase.file}">
+      <srcfiles dir="${root.fab.src}" includes="**/*.fab" />
+      <srcfiles file="${ttp.codebase.file}"/>
+    </uptodate>
+  </target>
+
+  <target name="check-user">
+    <uptodate property="user.up-to-date" targetfile="${user.codebase.file}">
+      <srcfiles dir="${user.fab.src}" includes="**/*.fab" />
+      <srcfiles file="${ttp.codebase.file}"/>
+    </uptodate>
+  </target>
+
+  <target name="publish" description="Publish Fabric source">
+    <fabc-in-worker
+        dest="${home.codebases}"
+        worker="${provider}"
+        app-home="${home}">
+      <env key="FABRIC_HOME" value="${home}"/>
+      <arg value="-publish-only" />
+      <arg value="-codebase-output-file"/> <arg value="${target.codebasefile}"/>
+      <arg value="-sourcepath" /> <arg value="${codebase.dir}" />
+      <arg value="-deststore" /> <arg value="${dest}" />
+      <arg line="${publish.args}"/>
+      <fileset dir="${codebase.dir}" includes="**/*.fab" />
+    </fabc-in-worker>
+  </target>
+
+  <!--
+  ****************************************************************************
+    Initialization targets.
+  ****************************************************************************
+  -->
+
+  <target name="init-local" depends="build-local">
+    <exec executable="bash" failonerror="true" >
+      <arg value="${home}/bin/start-worker"/>
+      <arg line="--name ${root} login.InitA"/>
+    </exec>
+
+    <exec executable="bash" failonerror="true" >
+      <arg value="${home}/bin/start-worker"/>
+      <arg line="--name ${user} login.InitUser"/>
+    </exec>
+  </target>
+
+  <target name="build-all" depends="build-init"/>
+  <target name="all" depends="build-all"/>
+
+</project>
+
+<!--
+vim: ts=2 sw=2 et ai
+-->

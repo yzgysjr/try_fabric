@@ -1,0 +1,55 @@
+package login;
+
+import java.io.PrintStream;
+import fabric.runtime.Runtime;
+import ttp.User;
+
+public class Main {
+	public static final void main{* <- }  (principal{*provider} p, String[] args) throws SecurityException, IllegalArgumentException
+		where caller(p),
+			provider actsfor p,
+			{*provider} <= {p<-},
+			{*provider} equiv {*Example.provider},
+			{*provider} equiv {*User.provider}
+	{
+		PrintStream[{}] out = null;
+		try {
+			Runtime[p] runtime = Runtime[p].getRuntime();
+			out = runtime == null ? null : runtime.stdout(new label {});
+		}
+		catch (SecurityException e) {
+		}
+
+		PrintStream[{}] out1 = endorse(out, {*provider; p -> ; _ <- _} to {{p -> p; p <- * ; * -> *; * <- *} meet {p -> p; p <- *; *provider}});
+		PrintStream[{}] out2 = declassify(out1, {});
+
+		final Store user_store = worker$.getStore(Config.userStoreName);   
+		final RemoteWorker user_worker = worker$.getWorker(Config.userWorkerName);   
+		final principal user = user_worker.getPrincipal();
+
+		final Store root_store = worker$.getStore(Config.rootStoreName);   
+		final RemoteWorker root_worker = worker$.getWorker(Config.rootWorkerName);   
+		final principal root = root_worker.getPrincipal();
+
+		final User[user] userServer = (User[user])user_store.getRoot().get(Config.userServerName);
+		if (userServer == null)
+			throw new Error("Could not find fab://" + user_store.name() + "/" + Config.userServerName);
+		
+		final User[user] rootServer = (User[root])root_store.getRoot().get(Config.rootServerName);
+		if (rootServer == null)
+			throw new Error("Could not find fab://" + root_store.name() + "/" + Config.userServerName);
+
+		final Store ttp_store = worker$.getStore(Config.ttpStoreName); 
+		final RemoteWorker ttp_worker = worker$.getWorker(Config.ttpWorkerName); 
+		final principal ttp = ttp_worker.getPrincipal();
+		
+		if (ttp actsfor root
+		 && ttp actsfor user
+		 && p equiv ttp
+		 && provider actsfor ttp
+		 && ttp equiv ttp_store) 
+		  	new Example[root, user, ttp](rootServer, userServer).go(out2);
+	}
+
+}
+

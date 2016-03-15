@@ -1,0 +1,9 @@
+
+package ttp;
+
+public interface User[principal UserPrincipal]
+	where {*provider; * <- } <= {UserPrincipal <- ; * <- }
+{
+	public String{UserPrincipal -> ; UserPrincipal <- } getUsername{UserPrincipal -> ; UserPrincipal <- }(); 
+}
+

@@ -1,0 +1,65 @@
+
+package login;
+
+import java.io.PrintStream;
+
+import fabric.runtime.Runtime;
+import ttp.User;
+
+public class Example [principal RootPrincipal, principal UserPrincipal, principal Ttp] 
+	authority(Ttp)
+	where
+		Ttp actsfor RootPrincipal,
+		Ttp actsfor UserPrincipal,
+		provider actsfor Ttp, 
+	{*provider} <= {},
+	{*provider} equiv {*User.provider},
+	{*provider} <= {Ttp <- }
+{
+	final User[RootPrincipal]{Ttp <- } root;
+	final User[UserPrincipal]{Ttp <- } user;
+
+	public Example{Ttp <- } (User[RootPrincipal]{Ttp <- } root, User[UserPrincipal]{Ttp <- } user) {
+		this.root = root;
+		this.user = user;
+		super();
+	}
+
+	public void go{Ttp <- } (PrintStream[{}] {} output) where authority (Ttp) {
+		output.println("Starting login example");
+
+		final Store{Ttp <- } store = worker$.getStore(Config.ttpStoreName);
+		final label{Ttp <- } login_lbl = new label{RootPrincipal <- ; UserPrincipal <- ; Ttp -> }@store;
+
+		String result = "not determined";
+
+		if (store actsfor Ttp) {
+            // for simplicity, we do not require password
+			String rootUsername = root.getUsername();
+			String rootPassword = "12345";
+			String userUsername = user.getUsername();
+			String userPassword = "12345";
+
+			if (rootUsername == userUsername) {
+				if (rootPassword == userPassword) {
+					result = "correct.";
+				}
+				else {
+					result = "wrong password.";
+				}
+			}
+			else {
+				result = "wrong username.";
+			}
+		}
+		else {
+			throw new Error("Store does not act for Ttp");
+		}
+		
+		String {Ttp ->; Ttp <-} result1 = endorse(result, {*login_lbl} to {Ttp ->; Ttp <-});
+		String {} result2 = declassify(result1, {});
+		output.println ("Login result " + result2);
+	}
+
+}
+
