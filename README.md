@@ -1,13 +1,14 @@
 # Login System Example
 
-This is a login system example, basically modified from the original auction
-example. It is intended to model a simple login system. A trusted
+This is an example of [Fabric](https://github.com/apl-cornell/fabric),
+basically modified from the original auction example.
+It is intended to model a simple login system. A trusted
 third party will do something like zero knowledge proof to illustrate
 whether the user's password is equal to the root's password.
 
 The example utilizes feature of the persistent store in Fabric, where
-if the user / root get shutdown by accident, it will be easy to recover
-without losing information.
+if the user / root is shutdown by accident, it will be easy to recover
+without losing persistent data.
 
 This directory contains the following sub-directories:
 
@@ -65,3 +66,26 @@ This example uses three stores ("userStore", "rootStore", "ttpStore").
      from the login example directory:
 
         $ rm -rf var
+
+## References
+[1] Owen Arden, Michael D. George, Jed Liu, K. Vikram, Aslan Askarov,
+    and Andrew C. Myers. Sharing mobile code securely with information
+    flow control. In Proc. IEEE 2012 Symposium on Security and Privacy,
+    pages 191–205, San Francisco, CA, USA, May 2012. Software release
+    at <http://www.cs.cornell.edu/projects/fabric/>.
+
+[2] Jed Liu, Michael D. George, K. Vikram, Xin Qi, Lucas Waye, and
+    Andrew C. Myers. Fabric: A platform for secure distributed
+    computation and storage. In Proc. 22nd ACM Symposium on Operating
+    Systems Principles (SOSP), pages 321–334, Big Sky, MT, USA, October
+    2009. Software release at
+          <http://www.cs.cornell.edu/projects/fabric/>.
+
+[3] Stephen Chong, K. Vikram, and Andrew C. Myers. SIF: Enforcing
+    confidentiality and integrity in web applications. In Proc. 16th
+    USENIX Security Symposium, pages 1–16, Boston, MA, USA, August
+    2007. See <http://www.cs.cornell.edu/jif/sif/>.
+
+[4] Michael J. Carey, David J. DeWitt, and Jeffrey F. Naughton. The OO7
+    Benchmark. In Proc. ACM SIGMOD 1993 International Conference on
+    Management of Data, pages 12-21, Washington, DC, USA, May 1993.
